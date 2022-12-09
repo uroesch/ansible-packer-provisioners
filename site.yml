@@ -1,0 +1,12 @@
+# summary: Site specific postinstallation routines
+# type: Ansible Playbook
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Postinstallation routines for site specific
+#   tweaks.
+---
+- name: 'Site specific includes'
+  hosts: default
+  become: true
+
+  roles:

@@ -1,0 +1,15 @@
+# summary: Packer provisioning playbook
+# type: Ansible Playbook
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Ansible playbook for provisioning various
+#   Linux images after the basic install.
+---
+- name: 'Provision a Linux Base Build'
+  hosts: default
+  become: true
+
+  roles:
+    - packer-provisioner
+
+- import_playbook: site.yml

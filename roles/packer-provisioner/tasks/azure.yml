@@ -1,0 +1,91 @@
+# title: Manage installation for Azure
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Install the walinux agent on all machines but
+#   only run it on hyperv machines.
+#   Requires `virt-what`.
+#   Configure cloud-init for ubuntu.
+---
+# -----------------------------------------------------------------------------
+# Cloud Init Adjustments for ubuntu
+# -----------------------------------------------------------------------------
+- block:
+  - name: azure - Remove cloud-init's 99-installer.cfg file
+    file:
+      state: absent
+      path: "/etc/cloud/cloud.cfg.d/99-installer.cfg"
+  when: packer_distribution == 'ubuntu'
+
+- block:
+  - name: azure - Create cloud-init-local.service override directory
+    file:
+      state: directory
+      path: "/etc/systemd/system/cloud-init-local.service.d"
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: azure - Create cloud-init-local.service override.conf
+    copy:
+      dest: "/etc/systemd/system/cloud-init-local.service.d/override.conf"
+      owner: root
+      group: root
+      mode: '0644'
+      content: |+2
+        [Unit]
+        Requires=var-tmp.mount
+        After=var-tmp.mount
+        [Service]
+        # remount the /var/tmp/to be executable or cloud-init
+        # is getting its panties into a knot
+        ExecStartPre=/bin/mount -o remount,exec,suid,dev /var/tmp
+        # remount with the protections in place after being finished
+        ExecStartPost=/bin/mount -o remount /var/tmp
+  when:
+    - packer_distribution == 'ubuntu'
+    - packer_os_major | int == 18
+
+
+# -----------------------------------------------------------------------------
+# Override cloud-final service
+# -----------------------------------------------------------------------------
+- block:
+  - name: azure - Create cloud-final.service override directory
+    file:
+      state: directory
+      path: "/etc/systemd/system/cloud-final.service.d"
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: azure - Create cloud-final.service override.conf
+    copy:
+      dest: "/etc/systemd/system/cloud-final.service.d/override.conf"
+      owner: root
+      group: root
+      mode: '0644'
+      content: |+2
+        [Service]
+        # Tries to restart NetworkManager which is not present on
+        # RHEL/CentOS/OracleLinux 7 -> removing it
+        ExecStartPost=
+  when:
+    - packer_os_family == 'redhat'
+    - packer_os_major | int == 7
+
+
+# -----------------------------------------------------------------------------
+# Reconfigure grub for azure console output
+# -----------------------------------------------------------------------------
+- name: azure - Add console options to GRUB_CMDLINE_LINUX
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX=".*?)"'
+    line: '\g<1> {{ item }}"'
+    backrefs: yes
+  notify: Regenerate grub.cfg
+  loop:
+    - earlyprintk=ttyS0
+    - console=tty0
+    - console=ttyS0
+    - rootdelay=300

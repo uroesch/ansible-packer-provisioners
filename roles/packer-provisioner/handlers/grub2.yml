@@ -1,0 +1,9 @@
+# title: Regenerate grub.cfg after parameter change
+# type: Ansible Handlers
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Regenerate the grub config after changes to
+#   /etc/default/grub
+---
+- name: Regenerate grub.cfg
+  shell: "{{ packer_regenerate_grub_command }}"

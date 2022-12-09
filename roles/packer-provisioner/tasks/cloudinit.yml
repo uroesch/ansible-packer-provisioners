@@ -1,0 +1,82 @@
+# title: manage cloud-init configuratiion
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Clean up the cloud-init setup before
+#   releasing and wrapping up the image.
+---
+- block:
+  - name: cloud-init - install packages
+    package:
+      name: "{{ packer_cloudinit_packages | flatten }}"
+      state: present
+
+  - name: cloud-init - cleanup cloud-init files
+    shell: cloud-init clean --logs
+
+  when:
+    - packer_dist_name != 'sles_12'
+
+# ----------------------------------------------------------------------------
+# RHEL 7, SLES 15 and OpenSuse 15 do have a problem with dhclient being copied
+# to /var/tmp For more info see:
+#   https://bugzilla.redhat.com/show_bug.cgi?id=1857309
+# ----------------------------------------------------------------------------
+- block:
+  - name: cloud-init - Check if patch already applied
+    shell: >+2
+      fgrep --count "if not util.is_exe(sandbox_dhclient_cmd):"
+      {{ packer_cloudinit_dhcp_file }} || :
+    register: packer_cloudinit_dhcp_patch
+
+  - name: cloud-init - Patch cloud-init's dhcp.py for azure
+    lineinfile:
+      path: "{{ packer_cloudinit_dhcp_file }}"
+      create: no
+      state: present
+      insertafter: "    lease_file = os.path.join.*"
+      line: |+2
+            # In some cases files in /var/tmp may not be executable, launching dhclient
+            # from there will certainly raise 'Permission denied' error. Try launching
+            # the original dhclient instead.
+            if not util.is_exe(sandbox_dhclient_cmd):
+                sandbox_dhclient_cmd = dhclient_cmd_path
+    when: packer_cloudinit_dhcp_patch.stdout == '0'
+
+  when: packer_cloudinit_dhcp_file is defined
+
+# ----------------------------------------------------------------------------
+# Enable services on SLE as they are not enabled
+# For more info see: https://bugzilla.redhat.com/show_bug.cgi?id=1857309
+# ----------------------------------------------------------------------------
+- name: cloud-init - Enable services
+  systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - cloud-config.service
+    - cloud-init.service
+    - cloud-final.service
+  when: packer_os_family == 'suse'
+
+# ----------------------------------------------------------------------------
+# Create a config file for Ubuntu 18.04 to run at next boot.
+# ----------------------------------------------------------------------------
+- block:
+  - name: cloud-init - Copy datasource list configuration
+    template:
+      src: 99-installer.cfg
+      dest: /etc/cloud/cloud.cfg.d/99-installer.cfg
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: cloud-init - Do not lock the default user password
+    lineinfile:
+      path: /etc/cloud/cloud.cfg
+      create: no
+      state: present
+      insertafter: "     name: ubuntu"
+      line: "     lock_passwd: False"
+      regexp: "     lock_passwd: True"
+  when: packer_dist_name == 'ubuntu_18.04'

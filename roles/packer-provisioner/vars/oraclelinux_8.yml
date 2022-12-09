@@ -1,0 +1,15 @@
+# summary: RedHat specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  family RedHat such as packages.
+---
+packer_dist_short: ol8
+packer_packages:
+  - oracle-epel-release-el8
+  - "{{ packer_common_packages }}"
+packer_vmware_packages:
+  - python3
+  - python3-netifaces
+  - "{{ packer_common_vmware_packages }}"

@@ -1,0 +1,10 @@
+# title: Install the hyper-v specific tools
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Install hyper-v specific tools for a machine
+#   running on on-prem hyper-v or in the azure cloud.
+---
+- name: hyper-v - install linux specific packages
+  package:
+    name: "{{ packer_hyperv_packages }}"
+    state: present

@@ -1,0 +1,31 @@
+galaxy_info:
+  author: Urs Roesch <roesch@puzzle.ch>
+  description: |2+
+    Generic Hashicorp Packer provisioning role for multiple environments.
+  company: Puzzle ITC
+  license: Proprietary
+  min_ansible_version: 2.9
+  platforms:
+   - name: CentOS
+     versions:
+     - 7
+     - 8
+   - name: OracleLinux
+     versions:
+     - 7
+     - 8
+   - name: RedHat
+     versions:
+     - 7
+     - 8
+   - name: Ubuntu
+     versions:
+     - 18.04
+     - 20.04
+  galaxy_tags: 
+     - packer
+     - provisioning
+     - image
+     - build
+     - deployment
+dependencies: []

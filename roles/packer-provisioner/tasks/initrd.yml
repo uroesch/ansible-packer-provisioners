@@ -1,0 +1,59 @@
+# title: Manage modules and blacklist for initrd
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Blacklist kernel modules and add modules
+#   for various virtual platforms
+#   to dracut and regenerate the initrd image.
+---
+- name: initrd - Disable floppy drive
+  copy:
+    owner: root
+    group: root
+    mode: '0644'
+    dest: /etc/modprobe.d/99-blacklist-floppy.conf
+    content: |2+
+      # Disable floppy drive to prevent issues during boot
+      blacklist floppy
+
+- name: initrd - Regenerate initrd
+  command: "mkinitramfs -o /boot/initrd.img-{{ ansible_kernel }}"
+  when: packer_os_family == 'debian'
+
+- block:
+  - name: initrd - Add modules
+    lineinfile:
+      path: /etc/dracut.conf
+      insertafter: '^#add_drivers\+='
+      line: 'add_drivers+=" {{ item }} "'
+      firstmatch: yes
+    loop:
+      - "{{ packer_hyperv_kernel_modules | join(' ') }}"
+      - "{{ packer_vmware_kernel_modules | join(' ') }}"
+    when: packer_os_major | int <= 7
+
+  - block:
+
+    - name: initrd - Add dracut file for vmware
+      template:
+        dest: /etc/dracut.conf.d/80-vmware.conf
+        src: dracut.conf
+      vars:
+        virt_name: VMware
+        kernel_modules: "{{ packer_vmware_kernel_modules }}"
+
+    - name: initrd - Add dracut file for hyperv
+      template:
+        dest: /etc/dracut.conf.d/90-hyperv.conf
+        src: dracut.conf
+      vars:
+        virt_name: Hyper-V
+        kernel_modules: "{{ packer_hyperv_kernel_modules }}"
+    when: packer_os_major | int >= 7
+
+  - name: initrd - Regenerate initrd
+    command: dracut -f -v --regenerate-all
+
+  when: >
+    packer_os_family == 'redhat' or
+    packer_os_family == 'suse'

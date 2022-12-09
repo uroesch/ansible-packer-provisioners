@@ -1,0 +1,21 @@
+# title: Dummy inventory for QEMU
+# type: Ansible Inventory
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Dummy inventory to be used with QEMU
+#   virtual machines save with the base build.
+---
+default:
+  hosts:
+    redhat:
+      ansible_ssh_user: root
+    ubuntu:
+      ansible_ssh_user: ubuntu
+  vars:
+    ansible_connection: ssh
+    ansible_host: 127.0.0.1
+    ansible_ssh_port: 22222
+    ansible_ssh_pass: F00bar123
+    ansible_ssh_common_args: >
+      -o StrictHostKeyChecking=no
+      -o UserKnownHostsFile=/dev/null

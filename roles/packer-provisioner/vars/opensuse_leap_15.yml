@@ -1,0 +1,16 @@
+# summary: openSuse Leap specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  distribution openSuse 15 such as packages.
+---
+packer_centos_gpg_url: https://www.centos.org/keys/RPM-GPG-KEY-CentOS-7
+packer_dist_short: osl15
+packer_packages:
+  - "{{ packer_common_packages }}"
+packer_vmware_packages:
+  - "{{ packer_common_vmware_packages }}"
+
+# path to dhcp.py file which requires patching.
+packer_cloudinit_dhcp_file: /usr/lib/python3.6/site-packages/cloudinit/net/dhcp.py

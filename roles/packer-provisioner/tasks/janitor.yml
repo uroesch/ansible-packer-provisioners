@@ -1,0 +1,76 @@
+# title: Jobs to cleanup to make the images smaller.
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Janitor jobs to reduce the size of the image
+---
+
+# -----------------------------------------------------------------------------
+# Ubunut specific jobs
+# -----------------------------------------------------------------------------
+- name: janitor - Remove unnecessary packages
+  package:
+    name:
+      - snapd
+    state: absent
+  when: packer_distribution == 'ubuntu'
+
+# -----------------------------------------------------------------------------
+# Debian OS Family jobs
+# -----------------------------------------------------------------------------
+- block:
+  - name: janitor - Clean cache and dangling packages
+    apt:
+      autoremove: yes
+      autoclean: yes
+
+  - name: janitor - Clean cache archives
+    file:
+      path: /var/cache/apt/archives
+      state: absent
+
+  - name: janitor - Clean i386 archives
+    file:
+      path: /var/cache/apt/i386
+      state: absent
+
+  when: packer_os_family == 'debian'
+
+# -----------------------------------------------------------------------------
+# Redhat OS Family jobs
+# -----------------------------------------------------------------------------
+- block:
+  - name: janitor - Clean cache and dangling packages
+    shell: yum clean all
+    args:
+      warn: no
+
+  - name: janitor - Create empty /.unconfigured file
+    file:
+      path: /.unconfigured
+      state: touch
+
+  - name: janitor - Remove HWADDR and UUID from network interface config
+    lineinfile:
+      path: /etc/sysconfig/network-scripts/ifcfg-eth0
+      state: absent
+      regexp: '^(HWADDR|UUID)'
+
+  when: packer_os_family == 'redhat'
+
+# -----------------------------------------------------------------------------
+# Generic jobs
+# -----------------------------------------------------------------------------
+- name: janitor - Remove the ssh_host keys
+  shell:
+    cmd: 'find /etc/ssh -name "ssh_host_*" -ls -delete'
+
+- name: janitor - Remove persistent network configs
+  shell:
+    cmd: 'find /etc/udev/rules.d/ -name "*-persistent-*.rules" -ls -delete'
+
+- name: janitor - Clear machine-id
+  copy:
+    dest: /etc/machine-id
+    content: ''
+    mode: '0444'

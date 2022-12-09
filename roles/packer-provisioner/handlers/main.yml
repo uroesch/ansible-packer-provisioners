@@ -1,0 +1,8 @@
+# title: Packer provisioner handlers
+# type: Ansible Handlers
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Include file for the provisioner handlers
+---
+- name: grub2 handlers
+  import_tasks: grub2.yml

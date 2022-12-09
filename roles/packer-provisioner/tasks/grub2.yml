@@ -1,0 +1,21 @@
+# title: Modify the grub2 parameters
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Setup grub2 to better suit the requirements
+#   of cloud platforms.
+---
+- name: grub2 - Clean up GRUB_CMDLINE_LINUX
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX=.*?){{ item }}(.*)'
+    line: '\g<1>\g<2>'
+    backrefs: yes
+  notify: Regenerate grub.cfg
+  loop:
+    - rhgb
+    - quiet
+    - earlyprintk=ttyS0
+    - console=tty0
+    - console=ttyS0(?:,[0-9ns]+)?
+    - rootdelay=300

@@ -1,0 +1,22 @@
+# summary: Debian specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  family Debian such as packages.
+---
+packer_dist_short: "{{ ansible_facts['ansible_distribution_release'] }}"
+packer_walinuxagent_package: walinuxagent
+packer_walinuxagent_service: walinuxagent
+packer_cloudinit_packages:
+  - cloud-init
+packer_hyperv_packages:
+  - linux-azure
+  - linux-cloud-tools-generic
+packer_common_packages:
+  - virt-what
+  - openssl
+packer_common_vmware_packages:
+  - open-vm-tools
+  - perl
+packer_regenerate_grub_command: update-grub2

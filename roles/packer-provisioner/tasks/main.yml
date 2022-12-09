@@ -1,0 +1,75 @@
+# title: packer postinstall
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   collection for creating packer postinstalls
+---
+- include_vars: "{{ packer_os_family }}.yml"
+  tags:
+    - always
+- include_vars: "{{ packer_distribution }}.yml"
+  tags:
+    - always
+- include_vars: "{{ packer_dist_name }}.yml"
+  tags:
+    - always
+
+- name: Repositories
+  import_tasks: repos.yml
+  tags:
+    - repos
+    - sources
+
+- name: Packages
+  import_tasks: packages.yml
+  tags:
+    - always
+    - package
+    - packages
+
+
+- name: Adjust grub2
+  import_tasks: grub2.yml
+  tags:
+    - grub
+    - grub2
+
+- name: Add kernel modules
+  import_tasks: initrd.yml
+  tags:
+    - dracut
+    - initrd
+
+- name: Cloud Init
+  import_tasks: cloudinit.yml
+  tags:
+    - always
+    - cloud-init
+    - cloudinit
+
+- name: Configure vmware
+  import_tasks: vmware.yml
+  tags:
+    - never
+    - vmware
+
+- name: Configure hyper-v
+  import_tasks: hyperv.yml
+  tags:
+    - never
+    - hyper-v
+    - hyperv
+    - azure
+
+- name: Configure azure
+  import_tasks: azure.yml
+  tags:
+    - never
+    - azure
+
+- name: Janitor jobs
+  import_tasks: janitor.yml
+  tags:
+    - always
+    - janitor
+    - cleanup

@@ -1,0 +1,8 @@
+# summary: Ubuntu specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  Ubuntu distributon.
+---
+packer_dist_name: "{{ packer_distribution | lower + '_' + ansible_facts['distribution_version'] }}"

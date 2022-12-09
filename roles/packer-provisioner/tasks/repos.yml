@@ -1,0 +1,44 @@
+# title: Configure repositories and sources
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Enable repositories or sources
+#   to install and update packages.
+---
+- block:
+    - name: repos - Enable Addons for Oracle Linux
+      ini_file:
+        path: "/etc/yum.repos.d/oracle-linux-{{ packer_dist_short }}.repo"
+        section: "{{ packer_dist_short }}_addons"
+        option: enabled
+        value: '1'
+  when: packer_distribution == 'oraclelinux'
+
+
+- name: repos - install cloud-tools repo on SLES
+  block:
+  - name: repos - install cloud-init dependency repos
+    zypper_repository:
+      name: 3rd_Party_Python
+      repo: https://download.opensuse.org/repositories/home:BuR_Industrial_Automation:SLE-12-SP5:python/SLE_12_SP5/
+      auto_import_keys: yes
+    when: packer_os_major == '12'
+
+  - name: repos - install suse repos
+    zypper_repository:
+      state: present
+      name: "{{ item.name }}"
+      repo: "{{ item.repo }}"
+      auto_import_keys: yes
+      runrefresh: yes
+    loop: "{{ packer_suse_repos }}"
+
+#Cloud:Tools.repo
+
+#  - name: packages - refresh repositories
+#    zypper_repository:
+#     repo: '*'
+#     autorefresh: yes
+
+  when:
+    - packer_distribution == 'sles'

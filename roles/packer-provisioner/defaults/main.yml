@@ -1,0 +1,34 @@
+# title: Default variables for packer provisioning
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Common variables used throughout the
+#   the role. Note all vars are prefixed with
+#   `packer` to prevent name collissions.
+---
+packer_os_major: "{{ ansible_facts['distribution_major_version'] | int }}"
+packer_os_minor: "{{ ansible_facts['distribution_version'] | regex_replace('^(?:.[^.]*)\\.(.[^.]*)', '\\1') | int }}"
+packer_os_family: "{{ ansible_facts['os_family'] | lower }}"
+packer_distribution: "{{ ansible_facts['distribution'] | lower | replace(' ', '_') }}"
+packer_dist_name: "{{ packer_distribution | lower + '_' + packer_os_major }}"
+
+packer_hyperv_kernel_modules:
+ - hv_balloon
+ - hv_netvsc
+ - hv_sock
+ - hv_storvsc
+ - hv_utils
+ - hv_vmbus
+
+packer_vmware_kernel_modules:
+ - vmw_pvscsi
+ - vmw_vmci
+ - vmxnet3
+ - mpt3sas
+ - mptspi
+ - mptbase
+ - mptsas
+ - mptscsih
+ - mptfc
+ - mptlan
+ - mptctl

@@ -1,0 +1,18 @@
+# summary: RedHat specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  family RedHat such as packages.
+---
+packer_dist_short: ol7
+# override hyperv packages as
+# hyperv-tools is is not available
+packer_hyperv_packages:
+  - hyperv-daemons
+packer_packages:
+  - oracle-epel-release-el7
+  - "{{ packer_common_packages }}"
+packer_vmware_packages:
+  - python-netifaces
+  - "{{ packer_common_vmware_packages }}"

@@ -1,0 +1,20 @@
+# summary: Suse specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  family Suse such as packages.
+---
+packer_walinuxagent_package: WALinuxAgent
+packer_walinuxagent_service: waagent
+packer_cloudinit_packages:
+  - cloud-init
+packer_hyperv_packages:
+  - hyper-v
+packer_common_packages:
+  - virt-what
+  - openssl
+packer_common_vmware_packages:
+  - open-vm-tools
+  - perl
+packer_regenerate_grub_command: grub2-mkconfig -o /boot/grub2/grub.cfg

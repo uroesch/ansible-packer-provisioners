@@ -1,0 +1,40 @@
+# title: Manage VMWare specific tools configurations
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Install the open-vm-tools and do configurations
+---
+- name: vmware - install vmware packages
+  package:
+    name: "{{ packer_vmware_packages | flatten }}"
+    state: present
+
+- name: vmware - install cloud-init for vmware-guestinfo
+  block:
+  - name: vmware - download cloud-init install script
+    get_url:
+      url: 'https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo/master/install.sh'
+      dest: /var/tmp/cloud-init_vmware-guestinfo_install.sh
+      owner: root
+      group: root
+      mode: '0750'
+
+  - name: vmware - install cloud-init vmware-guestinfo via shell script
+    command: bash -x /var/tmp/cloud-init_vmware-guestinfo_install.sh
+  tags:
+    - never
+    - vmware-guestinfo
+
+- name: vmware - Disable cloud-init network configuration
+  copy:
+    src: 77-vmware-network.cfg
+    dest: /etc/cloud/cloud.cfg.d/77-vmware-network.cfg
+    owner: root
+    group: root
+
+# !!! ------------------------------------------------------------------------------------------ !!!
+# Remove cloud-init as it conflicts with the open-vm-tools during setups
+# !!! ------------------------------------------------------------------------------------------ !!!
+- name: vmware - remove cloud-init for vmware setup
+  package:
+    name: "{{ packer_cloudinit_packages | flatten }}"
+    state: absent

@@ -1,0 +1,72 @@
+# title: install packages on packer images
+# type: Ansible Tasks
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#   Collection of packages to be installed
+#   during packer provisioning.
+---
+
+# -----------------------------------------------------------------------------
+# Debian Family Section
+# -----------------------------------------------------------------------------
+- name: packages - Update apt cache
+  apt:
+    update_cache: yes
+  when: packer_os_family == 'debian'
+
+# Note:
+#   this block is only temporary until the whole installation process moves
+#   to Foreman. For now the RHEL stuff is coming from CD and does not provide
+#   a log of stuff. Here we inject the Centos Repos to test the deployment.
+
+# -----------------------------------------------------------------------------
+# RHEL Section
+# -----------------------------------------------------------------------------
+- block:
+  - name: packages - Install centos base repo - temporarily
+    copy:
+      src: CentOS_7-Base.repo
+      dest: /etc/yum.repos.d/CentOS-Base.repo
+
+  - name: packages - Import a key from a url
+    rpm_key:
+      key: "{{ packer_centos_gpg_url }}"
+      validate_certs: no
+      state: present
+  when:
+    - packer_distribution == 'redhat'
+    - packer_os_major | int == 7
+
+- block:
+  - name: packages - Install rocky repos - temporarily
+    copy:
+      src: "{{ item }}"
+      dest: "/etc/yum.repos.d/{{ item }}"
+    loop: 
+      - Rocky-BaseOS.repo
+      - Rocky-Extras.repo
+      - Rocky-AppStream.repo
+
+  - name: packages - Import a key from a url
+    rpm_key:
+      key: "{{ packer_rocky_gpg_url }}"
+      validate_certs: no
+  when:
+    - packer_distribution == 'redhat'
+    - packer_os_major | int == 8
+
+- name:
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    disable_gpg_check: yes
+  when:
+    - packer_distribution == 'redhat'
+    - packer_os_major | int >= 9
+
+# -----------------------------------------------------------------------------
+# Common Section
+# -----------------------------------------------------------------------------
+- name: packages - Install common packages
+  package:
+    name: "{{ packer_packages | flatten }}"
+    state: present

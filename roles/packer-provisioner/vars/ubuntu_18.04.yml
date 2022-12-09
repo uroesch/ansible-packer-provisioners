@@ -1,0 +1,14 @@
+# summary: RHEL 7 specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  family CentOS such as packages.
+---
+packer_packages:
+  - curl
+  - "{{ packer_common_packages }}"
+packer_vmware_packages:
+  - python3-netifaces
+  - python3-distutils
+  - "{{ packer_common_vmware_packages }}"

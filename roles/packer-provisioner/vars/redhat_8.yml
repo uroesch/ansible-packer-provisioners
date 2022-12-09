@@ -1,0 +1,17 @@
+# summary: RHEL 8 specific variables
+# type: Ansible Vars
+# author: Urs Roesch <roesch@puzzle.ch>
+# description: |
+#  Specific variables that match the OS
+#  family CentOS such as packages.
+---
+packer_centos_gpg_url: https://www.centos.org/keys/RPM-GPG-KEY-CentOS-Official
+packer_rocky_gpg_url: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-8
+packer_dist_short: el8
+packer_packages:
+  - epel-release
+  - "{{ packer_common_packages }}"
+packer_vmware_packages:
+  - python3
+  - python3-netifaces
+  - "{{ packer_common_vmware_packages }}"
