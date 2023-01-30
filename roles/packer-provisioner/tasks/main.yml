@@ -67,6 +67,11 @@
     - never
     - azure
 
+- name: Firstboot services
+  import_tasks: firstboot.yml
+  tags:
+    - always
+
 - name: Janitor jobs
   import_tasks: janitor.yml
   tags:

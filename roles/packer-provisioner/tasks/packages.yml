@@ -53,7 +53,7 @@
       validate_certs: no
   when:
     - packer_distribution == 'redhat'
-    - packer_os_major | int == 8
+    - packer_os_major | int >= 8
 
 - name:
   yum:

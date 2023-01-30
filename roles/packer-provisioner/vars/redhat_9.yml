@@ -6,6 +6,7 @@
 #  family CentOS such as packages.
 ---
 packer_centos_gpg_url: https://www.centos.org/keys/RPM-GPG-KEY-CentOS-Official
+packer_rocky_gpg_url: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
 packer_dist_short: el9
 packer_packages:
   - epel-release
