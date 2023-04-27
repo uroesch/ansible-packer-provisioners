@@ -16,6 +16,8 @@ default:
     ansible_host: 127.0.0.1
     ansible_ssh_port: 22222
     ansible_ssh_pass: F00bar123
+    ansible_remote_tmp: /tmp/.ansible/${USER}
     ansible_ssh_common_args: >
+      -o IdentitiesOnly=yes
       -o StrictHostKeyChecking=no
       -o UserKnownHostsFile=/dev/null

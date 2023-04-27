@@ -1,4 +1,4 @@
-# summary: CentOS 7 specific variables
+# summary: RHEL 9 and derivative specific variables
 # type: Ansible Vars
 # author: Urs Roesch <roesch@puzzle.ch>
 # description: |
@@ -11,6 +11,9 @@ packer_dist_short: el9
 packer_packages:
   - epel-release
   - "{{ packer_common_packages }}"
+packer_hyperv_packages:
+  - initscripts
+  - "{{ packer_common_hyperv_packages }}"
 packer_vmware_packages:
   - python3
   - python3-netifaces

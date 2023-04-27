@@ -6,5 +6,5 @@
 ---
 - name: hyper-v - install linux specific packages
   package:
-    name: "{{ packer_hyperv_packages }}"
+    name: "{{ packer_hyperv_packages | flatten }}"
     state: present

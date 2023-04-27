@@ -42,7 +42,7 @@
     copy:
       src: "{{ item }}"
       dest: "/etc/yum.repos.d/{{ item }}"
-    loop: 
+    loop:
       - Rocky-BaseOS.repo
       - Rocky-Extras.repo
       - Rocky-AppStream.repo

@@ -4,23 +4,6 @@
 #   Install the open-vm-tools and do configurations
 ---
 - block:
-  - name: firstboot - install firstboot script
-    copy:
-      dest: /usr/local/bin/ssh-firstboot.sh
-      owner: root
-      group: root
-      mode: '0755'
-      content: |
-        #!/usr/bin/env bash
-        # Create sshd host keys if they don't exist.
-        read -a keys <<< $(ssh-keygen --help |& sed -n   -e '/-t/ { s/-t//; s/[^a-z0-9 -]//g; p }');
-        for key in ${keys[@]}; do
-          [[ ${key} =~ -sk ]] && continue;
-          file=/etc/ssh/ssh_host_${key}_key;
-          [[ -f ${file} ]] && continue;
-          ssh-keygen -q -f "${file}" -N '' -t ${key}
-        done
-   
   - name: firstboot - install firstboot systemd services on ubuntu
     copy:
       dest: /etc/systemd/system/ssh-firstboot.service
@@ -35,12 +18,12 @@
         #
         [Service]
         Type=oneshot
+        ExecStart=/usr/bin/ssh-keygen -A
         ExecStartPost=/usr/bin/rm /etc/systemd/system/ssh-firstboot.service
-        ExecStart=/usr/local/bin/ssh-firstboot.sh 
         #
         [Install]
         WantedBy=multi-user.target
-  
+
   - name: firstboot - enable service
     systemd:
       name: ssh-firstboot
@@ -48,4 +31,3 @@
 
   when:
     - packer_distribution == 'ubuntu'
-

@@ -13,6 +13,11 @@ packer_hyperv_packages:
 packer_packages:
   - oracle-epel-release-el7
   - "{{ packer_common_packages }}"
+packer_hyperv_packages:
+  - hyperv-daemons
+  - hypervfcopyd
+  - hypervkvpd
+  - hypervvssd
 packer_vmware_packages:
   - python-netifaces
   - "{{ packer_common_vmware_packages }}"

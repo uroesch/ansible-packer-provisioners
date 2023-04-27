@@ -9,6 +9,9 @@ packer_dist_short: ol9
 packer_packages:
   - oracle-epel-release-el9
   - "{{ packer_common_packages }}"
+packer_hyperv_packages:
+  - initscripts
+  - "{{ packer_common_hyperv_packages }}"
 packer_vmware_packages:
   - python3
   - python3-netifaces

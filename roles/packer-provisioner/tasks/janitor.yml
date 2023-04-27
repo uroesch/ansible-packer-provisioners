@@ -56,6 +56,24 @@
       state: absent
       regexp: '^(HWADDR|UUID)'
 
+  - name: janitor - Remove rocky repos
+    file:
+      path: "/etc/yum.repos.d/{{ item }}"
+      state: absent
+    loop:
+      - Rocky-BaseOS.repo
+      - Rocky-Extras.repo
+      - Rocky-AppStream.repo
+    tags:
+      - never
+      - vmware
+      - hyperv
+      - hyper-v
+      - azure
+    when:
+      - packer_distribution == 'redhat'
+      - packer_os_major | int >= 8
+
   when: packer_os_family == 'redhat'
 
 # -----------------------------------------------------------------------------
@@ -74,3 +92,11 @@
     dest: /etc/machine-id
     content: ''
     mode: '0444'
+
+- name: janitor - Zero swap
+  shell: |
+    devices=$(swapon --show --noheadings | awk '/partition/ { print $1 }')
+    for device in ${devices}; do
+      swapoff ${device}
+      dd if=/dev/zero of=${device} bs=8M
+    done

@@ -54,9 +54,9 @@
     name: '{{ item }}'
     enabled: true
   loop:
-    - cloud-config.service
     - cloud-init.service
     - cloud-final.service
+    - cloud-config.service
   when: packer_os_family == 'suse'
 
 # ----------------------------------------------------------------------------
@@ -67,6 +67,7 @@
     template:
       src: 99-installer.cfg
       dest: /etc/cloud/cloud.cfg.d/99-installer.cfg
+      force: false
       owner: root
       group: root
       mode: '0644'
@@ -79,4 +80,5 @@
       insertafter: "     name: ubuntu"
       line: "     lock_passwd: False"
       regexp: "     lock_passwd: True"
-  when: packer_dist_name == 'ubuntu_18.04'
+  when:
+    - packer_distribution == 'ubuntu'

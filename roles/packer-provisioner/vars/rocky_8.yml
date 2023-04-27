@@ -1,15 +1,1 @@
-# summary: CentOS 7 specific variables
-# type: Ansible Vars
-# author: Urs Roesch <roesch@puzzle.ch>
-# description: |
-#  Specific variables that match the OS
-#  family CentOS such as packages.
----
-packer_dist_short: el8
-packer_packages:
-  - epel-release
-  - "{{ packer_common_packages }}"
-packer_vmware_packages:
-  - python3
-  - python3-netifaces
-  - "{{ packer_common_vmware_packages }}"
+redhat_8.yml

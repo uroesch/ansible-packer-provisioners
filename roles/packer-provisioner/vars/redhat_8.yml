@@ -11,6 +11,8 @@ packer_dist_short: el8
 packer_packages:
   - epel-release
   - "{{ packer_common_packages }}"
+packer_hyperv_packages:
+  - "{{ packer_common_hyperv_packages }}"
 packer_vmware_packages:
   - python3
   - python3-netifaces

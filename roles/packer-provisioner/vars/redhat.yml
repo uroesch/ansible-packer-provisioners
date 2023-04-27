@@ -5,17 +5,19 @@
 #  Specific variables that match the OS
 #  family RedHat such as packages.
 ---
+packer_os_family: redhat
 packer_walinuxagent_package: WALinuxAgent
 packer_walinuxagent_service: waagent
 packer_cloudinit_packages:
   - cloud-init
-packer_hyperv_packages:
-  - hyperv-daemons
-  - hyperv-tools
 packer_common_packages:
   - cloud-init
   - virt-what
   - openssl
+  - tar
+packer_common_hyperv_packages:
+  - hyperv-daemons
+  - hyperv-tools
 packer_common_vmware_packages:
   - open-vm-tools
   - perl

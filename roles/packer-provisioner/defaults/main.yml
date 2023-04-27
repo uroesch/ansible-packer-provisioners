@@ -29,6 +29,3 @@ packer_vmware_kernel_modules:
  - mptbase
  - mptsas
  - mptscsih
- - mptfc
- - mptlan
- - mptctl

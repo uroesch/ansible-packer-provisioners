@@ -7,10 +7,6 @@
 ---
 packer_centos_gpg_url: https://www.centos.org/keys/RPM-GPG-KEY-CentOS-7
 packer_dist_short: sl15
-packer_packages:
-  - "{{ packer_common_packages }}"
-packer_vmware_packages:
-  - "{{ packer_common_vmware_packages }}"
 packer_suse_repos:
   #- name: Virtualization
   #  repo: https://download.opensuse.org/repositories/Virtualization/SLE_15_SP3/

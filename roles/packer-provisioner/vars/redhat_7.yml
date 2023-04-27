@@ -1,4 +1,4 @@
-# summary: RHEL 7 specific variables
+# summary: RHEL 7 and derivated specific variables
 # type: Ansible Vars
 # author: Urs Roesch <roesch@puzzle.ch>
 # description: |
@@ -10,6 +10,8 @@ packer_dist_short: el7
 packer_packages:
   - epel-release
   - "{{ packer_common_packages }}"
+packer_hyperv_packages:
+  - "{{ packer_common_hyperv_packages }}"
 packer_vmware_packages:
   - python-netifaces
   - "{{ packer_common_vmware_packages }}"
